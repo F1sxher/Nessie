@@ -10,6 +10,7 @@ export enum requestAction {
   PING = "PING",
   NONE = "NONE",
   STOP = "STOP",
+  DRIVE = "DRIVE",
   PICKUP_BALL = "PICKUP_BALL",
   LAUNCH_BALL = "LAUNCH_BALL",
 }
@@ -29,6 +30,12 @@ export interface logRequestData extends baseRequestData {
   type: logType;
   message: string;
   context: string;
+}
+
+export interface driveRequestData extends baseRequestData {
+  action: requestAction.DRIVE;
+  leftSpeed: number;
+  rightSpeed: number;
 }
 
 export interface baseResponseData {

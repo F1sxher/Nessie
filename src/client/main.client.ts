@@ -4,12 +4,12 @@ import LogitechJoystickController from "../shared/Controllers/LogitechJoystickCo
 import {
   baseRequestData,
   baseResponseData,
-  logType,
+  driveRequestData,
   requestAction,
 } from "../shared/types";
-import { log, parseData } from "../shared/utils";
+import { parseData } from "../shared/utils";
 
-const address: string = "192.168.68.137:8080";
+const address: string = "nessie339:8080";
 
 let ws: Websocket = new Websocket(null);
 
@@ -33,7 +33,14 @@ const loop = (
     }
   }
 
-  // console.log(Controller1.getPitch());
+  const leftSpeed = Controller1.getPitch()/452;
+  const rightSpeed = Controller2.getPitch()/452;
+
+  ws.send(JSON.stringify({
+    action: requestAction.DRIVE,
+    leftSpeed: leftSpeed,
+    rightSpeed: rightSpeed
+  } as driveRequestData))
 
   return true;
 };
@@ -55,7 +62,7 @@ const init = async () => {
 
     const interval = setInterval(() => {
       loop(Controller1, Controller2);
-    }, 100);
+    }, 50);
   });
 };
 
@@ -64,19 +71,5 @@ init();
 ws.on("message", async (data) => {
   const parsedData = parseData(data.toString()) as baseResponseData;
 
-  // console.log(parsedData);
-});
-
-ws.on("close", async (code, data) => {
-  const parsedData = parseData(data.toString()) as baseResponseData;
-
-  log({
-    type: logType.WARNING,
-    message: `Server closed with code: ${code}`,
-    context: "SERVER CLOSED",
-    action: requestAction.LOG,
-  });
   console.log(parsedData);
-
-  process.exit();
 });
