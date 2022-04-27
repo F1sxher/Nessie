@@ -2,11 +2,13 @@ import Websocket, { WebSocketServer } from "ws";
 import {
   baseRequestData,
   baseResponseData,
+  logType,
   requestAction,
   resposneAction,
 } from "../shared/types";
-import { parseData } from "../shared/utils";
+import { log, parseData } from "../shared/utils";
 import pingAction from "./requestAction/PING";
+import STOP from "./requestAction/STOP";
 
 const doTest: boolean = true;
 
@@ -30,7 +32,12 @@ const wss = new WebSocketServer({
 });
 
 wss.on("connection", (ws, req) => {
-  console.log(`New Connection from ${req.socket.remoteAddress}`);
+  log({
+    type: logType.INFO,
+    context: "Connections",
+    message: `New Connection from ${req.socket.remoteAddress}`,
+    action: requestAction.LOG,
+  });
 
   ws.on("message", async (data) => {
     const parsedData = parseData(data.toString()) as baseRequestData;
@@ -45,6 +52,10 @@ wss.on("connection", (ws, req) => {
       // case requestAction.PING:
       //   returnData = await pingAction(parsedData);
       //   break;
+       case requestAction.STOP:
+         returnData = await STOP(parsedData);
+         ws.close(1000, returnData);
+         process.exit();
       default:
         break;
     }
