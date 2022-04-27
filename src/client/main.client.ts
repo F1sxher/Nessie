@@ -4,11 +4,12 @@ import LogitechJoystickController from "../shared/Controllers/LogitechJoystickCo
 import {
   baseRequestData,
   baseResponseData,
+  logType,
   requestAction,
 } from "../shared/types";
-import { parseData } from "../shared/utils";
+import { log, parseData } from "../shared/utils";
 
-const address: string = "127.0.0.1:8080";
+const address: string = "192.168.68.137:8080";
 
 let ws: Websocket = new Websocket(null);
 
@@ -31,6 +32,9 @@ const loop = (
       );
     }
   }
+
+  // console.log(Controller1.getPitch());
+
   return true;
 };
 
@@ -60,5 +64,19 @@ init();
 ws.on("message", async (data) => {
   const parsedData = parseData(data.toString()) as baseResponseData;
 
+  // console.log(parsedData);
+});
+
+ws.on("close", async (code, data) => {
+  const parsedData = parseData(data.toString()) as baseResponseData;
+
+  log({
+    type: logType.WARNING,
+    message: `Server closed with code: ${code}`,
+    context: "SERVER CLOSED",
+    action: requestAction.LOG,
+  });
   console.log(parsedData);
+
+  process.exit();
 });

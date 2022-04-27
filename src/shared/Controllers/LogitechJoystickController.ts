@@ -73,4 +73,28 @@ export default class LogitechJoystickController extends BaseJoystickController {
   public getButton(button: number): boolean {
     return this.controls.buttons[button - 1] === 1;
   }
+
+  /**
+   *
+   * @returns number
+   */
+  public getRoll(): number {
+    return this.controls.roll;
+  }
+
+  /**
+   *
+   * @returns number
+   */
+  public getPitch(): number {
+    return this.controls.pitch;
+  }
+
+  /**
+   *
+   * @returns number
+   */
+  public getYaw(): number {
+    return this.controls.yaw;
+  }
 }
